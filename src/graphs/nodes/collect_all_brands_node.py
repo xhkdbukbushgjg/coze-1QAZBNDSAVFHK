@@ -3,7 +3,7 @@ from typing import Dict
 from langchain_core.runnables import RunnableConfig
 from langgraph.runtime import Runtime
 from coze_coding_utils.runtime_ctx.context import Context
-from graphs.state import CollectBrandsInput, CollectBrandsOutput
+from graphs.state import CollectBrandsInput, CollectBrandsOutput, BrandSearchInput
 from graphs.nodes.search_brands_node import search_brands_node
 
 
@@ -21,10 +21,8 @@ def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, r
     # 为每个品牌执行搜索
     for brand in brands:
         try:
-            search_input = {
-                "brand_name": brand,
-                "report_date": ""
-            }
+            # 创建正确的输入类型实例
+            search_input = BrandSearchInput(brand_name=brand, report_date="")
             
             # 调用搜索节点
             result = search_brands_node(search_input, config, runtime)
@@ -33,8 +31,9 @@ def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, r
                 "communication_issues": result.communication_issues,
                 "system_issues": result.system_issues,
                 "hardware_issues": result.hardware_issues,
-                "raw_content": result.raw_content,
-                "search_count": len(result.search_results)
+                "search_count": len(result.search_results),
+                # 不传递完整的raw_content，只传递汇总信息
+                "summary": f"搜索到{len(result.search_results)}条相关结果"
             }
             
         except Exception as e:
@@ -43,8 +42,8 @@ def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, r
                 "communication_issues": [],
                 "system_issues": [],
                 "hardware_issues": [],
-                "raw_content": "",
                 "search_count": 0,
+                "summary": f"搜索失败: {str(e)}",
                 "error": str(e)
             }
     

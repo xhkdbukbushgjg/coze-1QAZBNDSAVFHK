@@ -23,13 +23,14 @@ def search_brands_node(state: BrandSearchInput, config: RunnableConfig, runtime:
     client = SearchClient(ctx=ctx)
     
     # 定义搜索关键词 - 覆盖不同类型的问题
+    # 移除关键词中的"1天"，改用更自然的表述
     search_queries = [
-        f"{brand_name} 差评 投诉 问题 1天",
-        f"{brand_name} 信号差 通话问题 1天",
-        f"{brand_name} 发热 卡顿 闪退 1天",
-        f"{brand_name} 屏幕问题 电池 1天",
-        f"{brand_name} 系统更新 BUG 1天",
-        f"{brand_name} 用户吐槽 1天",
+        f"{brand_name} 差评 投诉",
+        f"{brand_name} 信号差 通话问题",
+        f"{brand_name} 发热 卡顿 闪退",
+        f"{brand_name} 屏幕问题 电池",
+        f"{brand_name} 系统更新 BUG",
+        f"{brand_name} 用户吐槽",
     ]
     
     # 存储所有搜索结果
@@ -45,8 +46,8 @@ def search_brands_node(state: BrandSearchInput, config: RunnableConfig, runtime:
             response = client.search(
                 query=query,
                 search_type="web",
-                count=10,
-                time_range="1d",
+                count=15,  # 增加搜索结果数量
+                time_range="1w",  # 扩大时间范围到一周
                 need_summary=True
             )
             
@@ -92,13 +93,13 @@ def search_brands_node(state: BrandSearchInput, config: RunnableConfig, runtime:
             print(f"搜索 '{query}' 时出错: {e}")
             continue
     
-    # 合并所有原始内容
-    raw_content = "\n".join(raw_content_list)
-    
     # 限制返回数量，避免数据过多
-    communication_issues = communication_issues[:20]
-    system_issues = system_issues[:20]
-    hardware_issues = hardware_issues[:20]
+    communication_issues = communication_issues[:10]  # 减少到10条
+    system_issues = system_issues[:10]
+    hardware_issues = hardware_issues[:10]
+    
+    # 限制原始内容长度，只保留关键信息
+    raw_content = "\n".join(raw_content_list[:50])  # 只保留前50条
     
     return BrandSearchOutput(
         brand_name=brand_name,
