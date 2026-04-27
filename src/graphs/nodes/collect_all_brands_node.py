@@ -27,13 +27,18 @@ def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, r
             # 调用搜索节点
             result = search_brands_node(search_input, config, runtime)
             
+            # 限制每个品牌的搜索结果数量，避免超出 LLM 上下文限制
+            # 只保留最有代表性的 10 条结果（优先选择有发布时间的）
+            limited_results = result.search_results[:10] if result.search_results else []
+
             brand_results[brand] = {
                 "communication_issues": result.communication_issues,
                 "system_issues": result.system_issues,
                 "hardware_issues": result.hardware_issues,
                 "search_count": len(result.search_results),
-                # 不传递完整的raw_content，只传递汇总信息
-                "summary": f"搜索到{len(result.search_results)}条相关结果"
+                # 包含限制后的搜索结果，让 LLM 可以引用来源链接
+                "search_results": limited_results,
+                "summary": f"搜索到{len(result.search_results)}条相关结果，精选{len(limited_results)}条"
             }
             
         except Exception as e:
