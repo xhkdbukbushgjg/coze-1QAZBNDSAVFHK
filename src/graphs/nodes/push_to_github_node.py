@@ -8,19 +8,7 @@ from langgraph.runtime import Runtime
 from coze_coding_utils.runtime_ctx.context import Context
 from pydantic import BaseModel, Field
 
-
-class PushToGitHubInput(BaseModel):
-    """GitHub 推送节点输入"""
-    markdown_report: str = Field(..., description="Markdown 报告内容")
-    report_date: str = Field(default="", description="报告日期")
-
-
-class PushToGitHubOutput(BaseModel):
-    """GitHub 推送节点输出"""
-    success: bool = Field(..., description="是否成功推送")
-    commit_message: str = Field(..., description="Git 提交信息")
-    file_path: str = Field(..., description="文件在 GitHub 仓库中的路径")
-    github_url: str = Field(..., description="GitHub 文件 URL")
+from graphs.state import PushToGitHubInput, PushToGitHubOutput
 
 
 def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtime: Runtime[Context]) -> PushToGitHubOutput:
