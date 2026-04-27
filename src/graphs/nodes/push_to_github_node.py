@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 from datetime import datetime
 from typing import Optional
 from langchain_core.runnables import RunnableConfig
@@ -70,20 +71,45 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
             )
         
         # 添加文件到 git
-        add_cmd = f"git add {filename}"
+        # 注意：文件在 reports/ 目录下，需要使用相对路径 reports/{filename}
+        add_cmd = f"git add reports/{filename}"
         print(f"执行: {add_cmd}")
-        os.system(add_cmd)
+        result = subprocess.run(add_cmd, shell=True, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"❌ git add 失败: {result.stderr}")
+            return PushToGitHubOutput(
+                success=False,
+                commit_message=f"git add 失败: {result.stderr}",
+                file_path=f"reports/{filename}",
+                github_url=""
+            )
         
         # 提交更改
         commit_msg = f"feat: 添加手机品牌差评分析报告 - {report_date}"
         commit_cmd = f'git commit -m "{commit_msg}"'
         print(f"执行: {commit_cmd}")
-        os.system(commit_cmd)
+        result = subprocess.run(commit_cmd, shell=True, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"❌ git commit 失败: {result.stderr}")
+            return PushToGitHubOutput(
+                success=False,
+                commit_message=f"git commit 失败: {result.stderr}",
+                file_path=f"reports/{filename}",
+                github_url=""
+            )
         
         # 推送到远程仓库
         push_cmd = "git push origin main"
         print(f"执行: {push_cmd}")
-        os.system(push_cmd)
+        result = subprocess.run(push_cmd, shell=True, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"❌ git push 失败: {result.stderr}")
+            return PushToGitHubOutput(
+                success=False,
+                commit_message=f"git push 失败: {result.stderr}",
+                file_path=f"reports/{filename}",
+                github_url=""
+            )
         
         print("✅ 成功推送到 GitHub！")
         
