@@ -41,8 +41,12 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
     # 项目根目录
     project_root = os.getenv("COZE_WORKSPACE_PATH", "/app")
     
-    # 创建 reports 目录（在项目根目录下）
-    reports_dir = os.path.join(project_root, "reports")
+    # 检测运行环境并选择合适的目录
+    # API 环境（/opt/bytefaas/）使用临时目录，本地环境使用项目目录
+    if project_root.startswith("/opt/bytefaas/"):
+        reports_dir = "/tmp/reports"
+    else:
+        reports_dir = os.path.join(project_root, "reports")
     os.makedirs(reports_dir, exist_ok=True)
     
     # 构建文件名

@@ -25,8 +25,12 @@ def generate_document_node(state: DocumentGenerationInput, config: RunnableConfi
     # 项目根目录
     project_root = os.getenv("COZE_WORKSPACE_PATH", "/app")
     
-    # 保存 Markdown 文件到本地（用于 GitHub 推送）
-    reports_dir = os.path.join(project_root, "reports")
+    # 检测运行环境并选择合适的目录
+    # API 环境（/opt/bytefaas/）使用临时目录，本地环境使用项目目录
+    if project_root.startswith("/opt/bytefaas/"):
+        reports_dir = "/tmp/reports"
+    else:
+        reports_dir = os.path.join(project_root, "reports")
     os.makedirs(reports_dir, exist_ok=True)
     
     filename = f"brand_analysis_report_{report_date.replace('-', '')}.md"
