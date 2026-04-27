@@ -1,6 +1,7 @@
 import os
 import json
 from typing import Dict
+from datetime import datetime
 from langchain_core.runnables import RunnableConfig
 from langgraph.runtime import Runtime
 from coze_coding_utils.runtime_ctx.context import Context
@@ -31,9 +32,14 @@ def generate_report_node(state: ReportGenerationInput, config: RunnableConfig, r
     
     # 准备用户提示词的变量
     from jinja2 import Template
+    
+    # 如果没有指定 report_date，使用当前真实日期
+    if not report_date:
+        report_date = datetime.now().strftime("%Y年%m月%d日")
+    
     user_tpl = Template(user_prompt)
     user_prompt_content = user_tpl.render({
-        "report_date": report_date or "今天",
+        "report_date": report_date,
         "integrated_data": json.dumps(integrated_data, ensure_ascii=False, indent=2)
     })
     
