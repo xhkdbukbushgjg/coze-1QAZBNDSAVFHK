@@ -57,6 +57,8 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
     
     # 构建文件名
     filename = f"brand_analysis_report_{report_date.replace('-', '')}.md"
+    
+    # 文件保存路径（用于生成）
     file_path = os.path.join(reports_dir, filename)
     
     # 写入 Markdown 文件
@@ -79,6 +81,29 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
                 file_path=file_path,
                 github_url=""
             )
+        
+        # 如果在 API 环境中，需要将文件复制到 Git 仓库的 reports/ 目录
+        if is_api_env:
+            # Git 仓库中的 reports/ 目录
+            git_reports_dir = os.path.join(project_root, "reports")
+            git_file_path = os.path.join(git_reports_dir, filename)
+            
+            # 尝试创建目录并复制文件
+            try:
+                os.makedirs(git_reports_dir, exist_ok=True)
+                shutil.copy(file_path, git_file_path)
+                print(f"✅ 文件已复制到 Git 仓库: {git_file_path}")
+            except Exception as e:
+                print(f"❌ 无法在 Git 仓库目录创建文件: {str(e)}")
+                return PushToGitHubOutput(
+                    success=False,
+                    commit_message=f"无法写入 Git 仓库: {str(e)}",
+                    file_path=file_path,
+                    github_url=""
+                )
+        else:
+            # 本地环境，文件已在正确的位置
+            git_file_path = file_path
         
         # 添加文件到 git
         # 注意：文件在 reports/ 目录下，需要使用相对路径 reports/{filename}
