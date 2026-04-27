@@ -11,6 +11,10 @@ class GlobalState(BaseModel):
     integrated_data: Dict = Field(default={}, description="整合后的分析数据")
     markdown_report: str = Field(default="", description="生成的Markdown报告内容")
     document_url: str = Field(default="", description="最终文档的S3下载URL")
+    github_url: str = Field(default="", description="GitHub 文件 URL")
+    github_success: bool = Field(default=False, description="GitHub 推送是否成功")
+    github_commit_message: str = Field(default="", description="Git 提交信息")
+    github_file_path: str = Field(default="", description="文件在 GitHub 仓库中的路径")
 
 
 # ==================== 图输入输出 ====================
@@ -23,6 +27,8 @@ class GraphOutput(BaseModel):
     """工作流输出"""
     document_url: str = Field(..., description="生成的分析报告文档URL")
     report_date: str = Field(..., description="报告日期")
+    github_url: str = Field(default="", description="GitHub 文件 URL")
+    github_success: bool = Field(default=False, description="GitHub 推送是否成功")
 
 
 # ==================== 品牌搜索节点 ====================
