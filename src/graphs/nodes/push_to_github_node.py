@@ -42,8 +42,14 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
     project_root = os.getenv("COZE_WORKSPACE_PATH", "/app")
     
     # 检测运行环境并选择合适的目录
-    # API 环境（/opt/bytefaas/）使用临时目录，本地环境使用项目目录
-    if project_root.startswith("/opt/bytefaas/"):
+    # API 环境使用临时目录，本地环境使用项目目录
+    # 检测逻辑：不是本地路径就认为是 API 环境
+    is_api_env = (
+        project_root.startswith("/opt/") or
+        not project_root.startswith("/workspace/")
+    )
+    
+    if is_api_env:
         reports_dir = "/tmp/reports"
     else:
         reports_dir = os.path.join(project_root, "reports")
