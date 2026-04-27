@@ -24,7 +24,8 @@ def search_brands_node(state: BrandSearchInput, config: RunnableConfig, runtime:
     client = SearchClient(ctx=ctx)
     
     # 计算时间筛选的截止日期（最近7天）
-    cutoff_date = datetime.now() - timedelta(days=7)
+    # 使用带时区的 datetime，以便与搜索结果的 publish_time 进行比较
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=7)
     
     # 定义搜索关键词 - 覆盖不同类型的问题
     search_queries = [
