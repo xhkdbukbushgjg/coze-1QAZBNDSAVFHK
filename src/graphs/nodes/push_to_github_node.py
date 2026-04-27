@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 class PushToGitHubInput(BaseModel):
     """GitHub 推送节点输入"""
-    markdown_content: str = Field(..., description="Markdown 报告内容")
+    markdown_report: str = Field(..., description="Markdown 报告内容")
     report_date: str = Field(default="", description="报告日期")
 
 
@@ -30,7 +30,7 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
     """
     ctx = runtime.context
     
-    markdown_content = state.markdown_content
+    markdown_content = state.markdown_report
     report_date = state.report_date
     
     # 确定报告日期

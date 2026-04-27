@@ -91,7 +91,7 @@ class DocumentGenerationOutput(BaseModel):
 # ==================== GitHub 推送节点 ====================
 class PushToGitHubInput(BaseModel):
     """GitHub 推送节点输入"""
-    markdown_content: str = Field(..., description="Markdown 报告内容")
+    markdown_report: str = Field(..., description="Markdown 报告内容")
     report_date: str = Field(default="", description="报告日期")
 
 
