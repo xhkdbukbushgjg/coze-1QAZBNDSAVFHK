@@ -10,7 +10,7 @@ from graphs.nodes.search_brands_node import search_brands_node
 def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, runtime: Runtime[Context]) -> CollectBrandsOutput:
     """
     title: 收集所有品牌数据
-    desc: 并行搜索所有指定品牌的差评信息
+    desc: 并行搜索所有指定品牌的差评信息，在代码层面筛选最近7天的数据
     integrations: web-search
     """
     ctx = runtime.context
@@ -24,21 +24,27 @@ def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, r
             # 创建正确的输入类型实例
             search_input = BrandSearchInput(brand_name=brand, report_date="")
             
-            # 调用搜索节点
+            # 调用搜索节点（已在 search_brands_node 中进行时间筛选）
             result = search_brands_node(search_input, config, runtime)
             
-            # 限制每个品牌的搜索结果数量，避免超出 LLM 上下文限制
-            # 只保留最有代表性的 10 条结果（优先选择有发布时间的）
-            limited_results = result.search_results[:10] if result.search_results else []
-
+            # 简化搜索结果数据结构，只保留 LLM 需要的字段
+            # 每个品牌最多保留 5 条结果，避免数据量过大
+            simplified_results = []
+            for item in result.search_results[:5]:
+                simplified_results.append({
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "publish_time": item.get("publish_time", "")
+                })
+            
             brand_results[brand] = {
                 "communication_issues": result.communication_issues,
                 "system_issues": result.system_issues,
                 "hardware_issues": result.hardware_issues,
                 "search_count": len(result.search_results),
-                # 包含限制后的搜索结果，让 LLM 可以引用来源链接
-                "search_results": limited_results,
-                "summary": f"搜索到{len(result.search_results)}条相关结果，精选{len(limited_results)}条"
+                # 简化后的搜索结果，只包含标题、链接、发布时间
+                "search_results": simplified_results,
+                "summary": f"搜索到{len(result.search_results)}条最近7天的结果，精选{len(simplified_results)}条"
             }
             
         except Exception as e:
@@ -48,6 +54,7 @@ def collect_all_brands_node(state: CollectBrandsInput, config: RunnableConfig, r
                 "system_issues": [],
                 "hardware_issues": [],
                 "search_count": 0,
+                "search_results": [],
                 "summary": f"搜索失败: {str(e)}",
                 "error": str(e)
             }
