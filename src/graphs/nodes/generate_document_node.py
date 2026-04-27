@@ -10,7 +10,7 @@ from graphs.state import DocumentGenerationInput, DocumentGenerationOutput
 def generate_document_node(state: DocumentGenerationInput, config: RunnableConfig, runtime: Runtime[Context]) -> DocumentGenerationOutput:
     """
     title: 生成分析报告文档
-    desc: 将Markdown报告转换为PDF/DOCX文档并上传到对象存储
+    desc: 将Markdown报告转换为PDF文档并上传到对象存储，同时保存 Markdown 到本地
     integrations: document-generation
     """
     ctx = runtime.context
@@ -18,15 +18,30 @@ def generate_document_node(state: DocumentGenerationInput, config: RunnableConfi
     markdown_report = state.markdown_report
     report_date = state.report_date
     
+    # 确定报告日期
+    if not report_date:
+        report_date = datetime.now().strftime("%Y-%m-%d")
+    
+    # 项目根目录
+    project_root = os.getenv("COZE_WORKSPACE_PATH", "/app")
+    
+    # 保存 Markdown 文件到本地（用于 GitHub 推送）
+    reports_dir = os.path.join(project_root, "reports")
+    os.makedirs(reports_dir, exist_ok=True)
+    
+    filename = f"brand_analysis_report_{report_date.replace('-', '')}.md"
+    local_file_path = os.path.join(reports_dir, filename)
+    
+    with open(local_file_path, 'w', encoding='utf-8') as f:
+        f.write(markdown_report)
+    
+    print(f"✅ Markdown 文件已保存到本地: {local_file_path}")
+    
     # 初始化文档生成客户端
     doc_client = DocumentGenerationClient()
     
     # 生成文档标题（使用英文，避免中文路径问题）
-    if report_date:
-        date_str = report_date.replace("-", "")
-    else:
-        date_str = datetime.now().strftime("%Y%m%d")
-    
+    date_str = report_date.replace("-", "")
     title = f"phone_brand_analysis_report_{date_str}"
     
     try:
@@ -35,6 +50,7 @@ def generate_document_node(state: DocumentGenerationInput, config: RunnableConfi
             markdown_content=markdown_report,
             title=title
         )
+        print(f"✅ PDF 文档已生成并上传到 S3")
         
     except Exception as e:
         print(f"生成PDF文档时出错: {e}")

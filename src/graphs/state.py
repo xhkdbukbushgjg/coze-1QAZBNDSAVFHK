@@ -86,3 +86,18 @@ class DocumentGenerationInput(BaseModel):
 class DocumentGenerationOutput(BaseModel):
     """文档生成节点输出"""
     document_url: str = Field(..., description="生成的文档S3下载URL")
+
+
+# ==================== GitHub 推送节点 ====================
+class PushToGitHubInput(BaseModel):
+    """GitHub 推送节点输入"""
+    markdown_content: str = Field(..., description="Markdown 报告内容")
+    report_date: str = Field(default="", description="报告日期")
+
+
+class PushToGitHubOutput(BaseModel):
+    """GitHub 推送节点输出"""
+    success: bool = Field(..., description="是否成功推送")
+    commit_message: str = Field(..., description="Git 提交信息")
+    file_path: str = Field(..., description="文件在 GitHub 仓库中的路径")
+    github_url: str = Field(..., description="GitHub 文件 URL")

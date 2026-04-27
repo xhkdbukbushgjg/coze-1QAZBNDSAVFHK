@@ -12,6 +12,7 @@ from graphs.state import (
 from graphs.nodes.collect_all_brands_node import collect_all_brands_node
 from graphs.nodes.generate_report_node import generate_report_node
 from graphs.nodes.generate_document_node import generate_document_node
+from graphs.nodes.push_to_github_node import push_to_github_node
 
 
 # 创建状态图，指定工作流的入参和出参
@@ -21,6 +22,7 @@ builder = StateGraph(GlobalState, input_schema=GraphInput, output_schema=GraphOu
 builder.add_node("collect_brands", collect_all_brands_node)
 builder.add_node("generate_report", generate_report_node, metadata={"type": "agent", "llm_cfg": "config/generate_report_llm_cfg.json"})
 builder.add_node("generate_document", generate_document_node)
+builder.add_node("push_to_github", push_to_github_node)
 
 # 设置入口点
 builder.set_entry_point("collect_brands")
@@ -28,7 +30,8 @@ builder.set_entry_point("collect_brands")
 # 添加边（线性流程）
 builder.add_edge("collect_brands", "generate_report")
 builder.add_edge("generate_report", "generate_document")
-builder.add_edge("generate_document", END)
+builder.add_edge("generate_document", "push_to_github")
+builder.add_edge("push_to_github", END)
 
 # 编译图
 main_graph = builder.compile()
