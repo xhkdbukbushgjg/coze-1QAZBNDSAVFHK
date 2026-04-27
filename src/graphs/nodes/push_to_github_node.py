@@ -87,9 +87,9 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
         
         print("✅ 成功推送到 GitHub！")
         
-        # 构建文件在 GitHub 上的 URL（需要根据实际仓库配置调整）
-        # 这里使用占位符，实际需要从 git remote 获取
-        github_url = f"https://github.com/xhkdbukbushgjg/coze-1QAZBNDSAVFHK/blob/main/{filename}"
+        # 构建文件在 GitHub 上的 URL
+        # 文件保存在 reports/ 目录下，所以 URL 需要包含 reports/ 路径
+        github_url = f"https://github.com/xhkdbukbushgjg/coze-1QAZBNDSAVFHK/blob/main/reports/{filename}"
         
         return PushToGitHubOutput(
             success=True,
