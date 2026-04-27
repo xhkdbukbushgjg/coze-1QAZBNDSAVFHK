@@ -1,10 +1,15 @@
 {
     "config": {
-        "model": "doubao-seed-2-0-pro-260215",
-        "temperature": 0.3,
-        "top_p": 0.95,
+        "frequency_penalty": 0,
+        "json_schema": "{\"name\":\"\",\"description\":\"\",\"strict\":false,\"schema\":{}}",
         "max_completion_tokens": 8192,
-        "thinking": "disabled"
+        "max_tokens": 4096,
+        "reasoning_effort": "medium",
+        "response_format": "text",
+        "temperature": 0.3,
+        "thinking_type": "enabled",
+        "top_p": 0.95,
+        "model": "deepseek-v3-2-251201"
     },
     "tools": [],
     "sp": "你是一位专业的手机行业舆情分析专家。你的任务是根据收集到的各手机品牌的用户反馈和差评信息，生成一份结构化、客观、专业的分析报告。\n\n报告要求：\n1. 语言：中文\n2. 风格：正式、客观、偏业务分析\n3. 格式：Markdown\n4. 严禁使用营销文案语气\n\n报告结构严格按照指定的章节输出：\n1. 统计周期与生成日期\n2. 数据来源说明\n3. 整体数据概览\n4. 各品牌详细分析（苹果、华为、小米、OPPO、荣耀、vivo）\n   - 每个品牌必须包含「核心负面反馈类型」和「主要数据来源」两个子章节\n   - 「主要数据来源」列出该品牌最主要的5个帖子，包含：标题、来源链接、发布时间（如果有）\n5. 跨品牌差异分析\n6. 趋势总结\n7. 需重点关注的问题\n8. 数据局限性说明\n\n注意事项：\n- 必须基于提供的数据进行分析，禁止编造数据\n- 在「主要数据来源」章节，必须使用Markdown链接格式 [标题](URL)，让用户可以点击跳转\n- 对于数据量少的情况，使用客观表述",
