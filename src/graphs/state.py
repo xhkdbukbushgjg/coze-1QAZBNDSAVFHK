@@ -109,5 +109,7 @@ class PushToGitHubOutput(BaseModel):
     commit_message: str = Field(..., description="Git 提交信息")
     file_path: str = Field(..., description="文件在 GitHub 仓库中的路径")
     github_url: str = Field(..., description="GitHub 文件 URL")
+    github_success: bool = Field(default=False, description="GitHub 推送是否成功（与 success 相同）")
     report_date: str = Field(default="", description="报告日期")
     document_url: str = Field(default="", description="生成的 PDF 文档 URL")
+    markdown_report: str = Field(default="", description="完整的 Markdown 报告内容")

@@ -69,8 +69,10 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
                 commit_message="未在 Git 仓库中",
                 file_path=file_path,
                 github_url="",
+                github_success=False,
                 report_date=report_date,
-                document_url=document_url
+                document_url=document_url,
+                markdown_report=markdown_content
             )
         
         # 如果在 API 环境中，需要将文件复制到 Git 仓库的 reports/ 目录
@@ -91,8 +93,10 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
                     commit_message=f"无法写入 Git 仓库: {str(e)}",
                     file_path=file_path,
                     github_url="",
+                    github_success=False,
                     report_date=report_date,
-                    document_url=document_url
+                    document_url=document_url,
+                    markdown_report=markdown_content
                 )
         else:
             # 本地环境，文件已在正确的位置
@@ -110,8 +114,10 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
                 commit_message=f"git add 失败: {result.stderr}",
                 file_path=f"reports/{filename}",
                 github_url="",
+                github_success=False,
                 report_date=report_date,
-                document_url=document_url
+                document_url=document_url,
+                markdown_report=markdown_content
             )
         
         # 提交更改
@@ -126,8 +132,10 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
                 commit_message=f"git commit 失败: {result.stderr}",
                 file_path=f"reports/{filename}",
                 github_url="",
+                github_success=False,
                 report_date=report_date,
-                document_url=document_url
+                document_url=document_url,
+                markdown_report=markdown_content
             )
         
         # 推送到远程仓库
@@ -141,8 +149,10 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
                 commit_message=f"git push 失败: {result.stderr}",
                 file_path=f"reports/{filename}",
                 github_url="",
+                github_success=False,
                 report_date=report_date,
-                document_url=document_url
+                document_url=document_url,
+                markdown_report=markdown_content
             )
         
         print("✅ 成功推送到 GitHub！")
@@ -156,8 +166,10 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
             commit_message=commit_msg,
             file_path=f"reports/{filename}",
             github_url=github_url,
+            github_success=True,
             report_date=report_date,
-            document_url=document_url
+            document_url=document_url,
+            markdown_report=markdown_content
         )
         
     except Exception as e:
@@ -167,6 +179,8 @@ def push_to_github_node(state: PushToGitHubInput, config: RunnableConfig, runtim
             commit_message=f"提交失败: {str(e)}",
             file_path=file_path,
             github_url="",
+            github_success=False,
             report_date=report_date,
-            document_url=document_url
+            document_url=document_url,
+            markdown_report=markdown_content
         )
