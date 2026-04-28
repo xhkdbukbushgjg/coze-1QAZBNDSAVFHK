@@ -29,7 +29,7 @@ class GraphOutput(BaseModel):
     report_date: str = Field(..., description="报告日期")
     github_url: str = Field(default="", description="GitHub 文件 URL")
     github_success: bool = Field(default=False, description="GitHub 推送是否成功")
-    markdown_content: str = Field(default="", description="完整的 Markdown 报告内容")
+    markdown_report: str = Field(default="", description="完整的 Markdown 报告内容")
 
 
 # ==================== 品牌搜索节点 ====================
